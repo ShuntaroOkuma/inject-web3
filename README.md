@@ -60,15 +60,19 @@ NFT を持っていることで得られる恩恵のイメージ
 import create-account from "inject-web3"
 
 const Login = (props) => {
-  login(props.username, props.password);
-  create-account(props.username)
+  login(props.username, props.password); // 既存コード
+  const accountInfo = create-account(props.username) // 新規コード
+  save2DB(accountInfo)// 新規コード
+  return true // 既存コード
 }
 ```
 
 ```js
 const create-account = ({username}) => {
   const pub, priv = keygen()
-  // fclでアカウント作成
+  // fclでアカウント作成のためのトランザクションを実行
+  const accountInfo = fcl.hoge()
   // privをKMSなどで管理
+  return accountInfo
 }
 ```
