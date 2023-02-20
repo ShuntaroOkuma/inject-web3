@@ -76,3 +76,45 @@ const create-account = ({username}) => {
   return accountInfo
 }
 ```
+
+## 環境構築
+
+### Flow emulator
+
+- エミュレータの起動
+
+```sh
+flow emulator --contracts --simple-addresses -v
+```
+
+`--contracts` でデフォルトのコントラクトがデプロイされた状態でエミュレータが起動される。デプロイされるコントラクトはログに出力される。
+
+`--simple-addresses` でシンプルなアドレス形態にできる。
+
+`-v` でログを詳細に出力してくれる（log()の結果も出力してくれるようになる）。
+
+- wallet 環境の起動
+
+```sh
+flow dev-wallet -l debug
+```
+
+- アカウント作成のシェル実行
+
+```sh
+bash setup_env.sh
+```
+
+- コントラクトのデプロイ
+
+```sh
+flow deploy
+```
+
+### アプリ
+
+```sh
+cd sample-ec
+npm i
+npm run dev
+```
