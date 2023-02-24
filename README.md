@@ -79,6 +79,17 @@ const create-account = ({username}) => {
 
 ## 環境構築
 
+### MongoDB
+
+```sh
+docker run -itd \
+        -e MONGO_INITDB_ROOT_USERNAME=root \
+        -e MONGO_INITDB_ROOT_PASSWORD=pass \
+        -p 27017:27017 \
+        --name mongo \
+        mongo
+```
+
 ### Flow emulator
 
 - エミュレータの起動
