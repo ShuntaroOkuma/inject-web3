@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { Flex, Box, Button, Input } from "@chakra-ui/react";
-import Cookies from "js-cookie";
 import Header from "@/components/Header";
+import { userIdState } from "@/store/auth";
+import { useRecoilState } from "recoil";
 
 export default function Login() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const [userAuth, setUserAuth] = useRecoilState(userIdState);
 
   const onClickLogin = async () => {
     // TODO: Implement login process
     // The implementation of the login process is necessary here, but since it is a sample, it is passed.
-    Cookies.set("signedIn", userId);
+    setUserAuth(userId);
     router.push("/");
   };
 

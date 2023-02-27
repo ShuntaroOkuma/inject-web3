@@ -1,6 +1,5 @@
 import Head from "next/head";
 import { Top } from "@/components/Top";
-import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Auth from "@/components/Auth";
 
@@ -17,19 +16,15 @@ export async function getStaticProps() {
 }
 
 export default function Home({ products }) {
-  const [loggedIn, setLoggedIn] = useState("");
-
-  useEffect(() => {}, []);
-
   return (
     <main>
-      <Auth setLoggedIn={setLoggedIn}>
+      <Auth>
         <Head>
           <title>inject web3</title>
           <meta name="description" content="inject-web3 sample ec site" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <Header username={loggedIn} setLoggedIn={setLoggedIn} />
+        <Header />
         <Top products={products} />
       </Auth>
     </main>

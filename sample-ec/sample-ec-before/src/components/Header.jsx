@@ -1,3 +1,4 @@
+import { userIdState } from "@/store/auth";
 import {
   Box,
   Container,
@@ -9,11 +10,13 @@ import {
   MenuList,
   MenuItem,
 } from "@chakra-ui/react";
-import Cookies from "js-cookie";
 import { useRouter } from "next/router";
+import { useRecoilState } from "recoil";
 
-const Header = ({ username = undefined, setLoggedIn = undefined }) => {
+const Header = () => {
   const router = useRouter();
+  const [userId, setUserId] = useRecoilState(userIdState);
+
   return (
     <Box>
       <Container>
@@ -26,16 +29,15 @@ const Header = ({ username = undefined, setLoggedIn = undefined }) => {
           <Heading as="h1" fontSize="2xl">
             Sample EC
           </Heading>
-          {username ? (
+          {userId ? (
             <Menu>
               <MenuButton>
-                <Avatar name={username} src="https://bit.ly/broken-link" />
+                <Avatar name={userId} src="https://bit.ly/broken-link" />
               </MenuButton>
               <MenuList>
                 <MenuItem
                   onClick={() => {
-                    setLoggedIn("");
-                    Cookies.remove("signedIn");
+                    setUserId(null);
                     router.replace("/login");
                   }}
                 >

@@ -1,15 +1,16 @@
 import { useRouter } from "next/router";
-import Cookies from "js-cookie";
+import { userIdState } from "@/store/auth";
+import { useRecoilValue } from "recoil";
 
-const Auth = ({ setLoggedIn, children }) => {
+const Auth = ({ children }) => {
   const router = useRouter();
 
-  const signedIn = Cookies.get("signedIn");
+  const userId = useRecoilValue(userIdState);
 
-  if (!signedIn) {
+  console.log("userId: ", userId);
+
+  if (userId === null) {
     router.replace("/login");
-  } else {
-    setLoggedIn(signedIn);
   }
 
   return children;
