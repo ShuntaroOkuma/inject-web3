@@ -1,9 +1,8 @@
 import Head from "next/head";
-import { Login } from "@/components/Login";
 import { Top } from "@/components/Top";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
-import "@/flow/config";
+import Auth from "@/components/Auth";
 
 export async function getStaticProps() {
   const products = await fetch("http://localhost:3000/api/products").then(
@@ -20,19 +19,19 @@ export async function getStaticProps() {
 export default function Home({ products }) {
   const [loggedIn, setLoggedIn] = useState("");
 
+  useEffect(() => {}, []);
+
   return (
     <main>
-      <Head>
-        <title>inject web3</title>
-        <meta name="description" content="inject-web3 sample ec site" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Header username={loggedIn} />
-      {loggedIn ? (
+      <Auth setLoggedIn={setLoggedIn}>
+        <Head>
+          <title>inject web3</title>
+          <meta name="description" content="inject-web3 sample ec site" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <Header username={loggedIn} setLoggedIn={setLoggedIn} />
         <Top products={products} />
-      ) : (
-        <Login setLoggedIn={setLoggedIn} />
-      )}
+      </Auth>
     </main>
   );
 }

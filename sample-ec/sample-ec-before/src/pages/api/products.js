@@ -1,7 +1,10 @@
+/*
+Get products data registered on Stripe
+*/
 import Stripe from "stripe";
 
 export default async function handler(req, res) {
-  // GET以外のリクエストを許可しない
+  // Allow only GET request
   if (req.method.toLocaleLowerCase() !== "get") {
     return res.status(405).end();
   }
@@ -16,6 +19,7 @@ export default async function handler(req, res) {
   if (!products.data || products.data.length < 1) {
     return res.status(200).json([]);
   }
+
   const response = await Promise.all(
     products.data.map(async (product, i) => {
       const prices = await stripe.prices.list({

@@ -3,7 +3,7 @@ import { buffer } from "micro";
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const stripe = new Stripe(process.env.STRIPE_API_KEY, {
-  apiVersion: "2020-08-27",
+  apiVersion: "2022-11-15",
 });
 
 export const config = {
@@ -33,13 +33,10 @@ export default async function handler(request, response) {
   ) {
     return response.status(200).end();
   }
-  // 支払いが完全に完了したら稼働する
+  // Run after payment completed
   if (data.payment_status === "paid") {
     const item = await stripe.checkout.sessions.listLineItems(data.id);
     console.log(item);
-    /**
-     * injection point: カートの中身の情報を利用して、mintする
-     **/
   }
 
   return response.status(200).end();

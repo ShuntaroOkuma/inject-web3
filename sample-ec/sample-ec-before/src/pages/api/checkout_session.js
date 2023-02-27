@@ -6,6 +6,8 @@ export default async function handler(req, res) {
   }
   try {
     const { price, quantity, items } = req.body;
+    if (!items) return res.redirect(301, session.url);
+
     const lineItems = items
       ? items.map((item) => ({
           price: item.id,
@@ -25,8 +27,9 @@ export default async function handler(req, res) {
             },
           },
         ];
+
     const stripe = new Stripe(process.env.STRIPE_API_KEY, {
-      apiVersion: "2020-08-27",
+      apiVersion: "2022-11-15",
       maxNetworkRetries: 3,
     });
 
@@ -34,10 +37,10 @@ export default async function handler(req, res) {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: lineItems,
-      success_url: "http://localhost:3000/",
-      cancel_url: "http://localhost:3000/",
+      success_url: `${req.headers.origin}`,
+      cancel_url: `${req.headers.origin}`,
     });
-    if (!items) return res.redirect(301, session.url);
+
     res.status(200).json({
       url: session.url,
     });
