@@ -30,6 +30,8 @@ function getConfig() {
 
   const nonFungibleTokenAddress = env.NON_FUNGIBLE_TOKEN_ADDRESS;
 
+  const sampleNft = env.SAMPLE_NFT;
+
   const metadataViewsAddress = env.METADATA_VIEWS_ADDRESS;
 
   const storefrontAddress = env.NFT_STOREFRONT_ADDRESS;
@@ -46,6 +48,7 @@ function getConfig() {
     adminAccountKeyIndex,
     fungibleTokenAddress,
     nonFungibleTokenAddress,
+    sampleNft,
     metadataViewsAddress,
     storefrontAddress,
     flowTokenAddress,

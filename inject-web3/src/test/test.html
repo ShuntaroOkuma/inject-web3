@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="jp">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Flow Account</title>
+  </head>
+  <body>
+    <h1>Create Flow Account</h1>
+    <form action="/users" method="POST">
+      UserHash: <input type="text" name="userHash" />
+      <br />
+      <button type="submit">Create</button>
+    </form>
+    <br />
+    <h1>Mint NFT</h1>
+    <form action="/nfts" method="POST">
+      UserHash: <input type="text" name="userHash" />
+      <br />
+      Name: <input type="text" name="name" />
+      <br />
+      Description: <input type="text" name="description" />
+      <br />
+      Thumbnail: <input type="text" name="thumbnail" />
+      <br />
+      Metadata: <input type="text" name="metadata" />
+      <br />
+      <button type="submit">Mint</button>
+    </form>
+    <br />
+    <h3>Created account show console log -></h3>
+    <script>
+      fetch("http://localhost:5001/users-all")
+        .then((res) => {
+          return res.json();
+        })
+        .then((json) => {
+          console.log(json);
+        });
+    </script>
+  </body>
+</html>

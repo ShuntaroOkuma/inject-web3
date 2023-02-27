@@ -2,9 +2,12 @@ const express = require("express");
 const fcl = require("@onflow/fcl");
 const mongoose = require("mongoose");
 const User = require("./src/models/user");
-const execSync = require("child_process").execSync;
-const FlowService = require("./src/flow/flow");
 const getConfig = require("./config");
+
+const { getUser } = require("./src/db/getData");
+const createAccount = require("./src/api/createAccount");
+const mintNFT = require("./src/api/mintNFT");
+const getNFT = require("./src/api/getNFT");
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -36,140 +39,96 @@ API
 */
 
 /*
+Get a sample page
+*/
+app.get("/test", async (req, res) => {
+  res.sendFile(__dirname + "/src/test/test.html");
+});
+
+/*
 Get all users from mongodb
 */
-app.get("/all-users", async (req, res) => {
+app.get("/users-all", async (req, res) => {
   const allUsers = await User.find({});
-  console.log(allUsers);
-  res.send(allUsers);
+  res.json(allUsers);
 });
 
 /*
 Get the user info
 */
-app.get("/user/:id", async (req, res) => {
-  let address = "";
+app.get("/users/:id", async (req, res) => {
+  // Get user data from mongodb
+  const user = await getUser(req.params.id);
 
-  // Get address from mongodb
-  await User.findOne({ userId: req.params.id }, (err, result) => {
-    if (err) {
-      throw err;
-    }
-    if (!result) {
-      res.status(500).send("The user doesn't exsist");
-      return;
-    } else {
-      console.log("result: ", result);
-      address = result.address;
-    }
-  })
-    .clone()
-    .catch(function (err) {
-      console.log(err);
-    });
-
-  console.log("address: ", address);
-
-  // Get flow account info from address
-  const account = await fcl.send([fcl.getAccount(address)]).then(fcl.decode);
-  res.send(account);
+  if (user) {
+    // Get flow account info from address
+    const account = await fcl
+      .send([fcl.getAccount(user.address)])
+      .then(fcl.decode);
+    res.send(account);
+  } else {
+    res.status(500).send("The user doesn't exsist");
+  }
 });
 
 /*
-Get the create account page
+Get user's nfts 
 */
-app.get("/create-account", async (req, res) => {
-  res.sendFile(__dirname + "/src/test/createAccount.html");
+app.get("/users/:id/nft", async (req, res) => {
+  // Get user data from mongodb
+  const user = await getUser(req.params.id);
+
+  if (user) {
+    // Get nfts from user address
+    let nfts = await getNFT(user.address);
+
+    res.json({ userHash: user.userHash, address: user.address, nfts: nfts });
+  } else {
+    res.status(500).send("The user doesn't exsist");
+  }
 });
 
 /*
 Create account
 */
-app.post("/create-account", async (req, res) => {
-  console.log("req: ", req.body);
-
+app.post("/users", async (req, res) => {
   if (!req.body) {
     return res.status(500).send("request body is empty");
   }
 
-  // Generate key using flow cli through execSync
-  //  fcl doen't have the func of key generation
-  const result = execSync("flow keys generate").toString().split(/\n/);
-  console.log(result);
-  const privateKey = result[6].replace("Private Key \t\t ", "").trim();
-  const publicKey = result[7].replace("Public Key \t\t ", "").trim();
-  const mnemonic = result[8].replace("Mnemonic \t\t ", "").trim();
-  console.log("private:", privateKey);
-  console.log("public:", publicKey);
-  console.log("mnemonic:", mnemonic);
-  console.log("");
+  const { address, err } = await createAccount(req.body.userHash);
 
-  // 公開鍵でFlowアカウントを発行する
-  // その時のsignerはあらかじめ作成したおいたアカウントを指定する必要がある
-  const flowService = new FlowService(
-    config.adminAddress,
-    config.adminPrivateKeyHex,
-    config.adminAccountKeyIndex
+  if (err) {
+    res.status(500).json({ message: "Failed: can't create user", err: err });
+  } else {
+    res.json({ address: address });
+  }
+});
+
+/*
+Mint NFT
+*/
+app.post("/nfts", async (req, res) => {
+  if (!req.body) {
+    return res.status(500).send("request body is empty");
+  }
+
+  const userHash = req.body.userHash;
+  const name = req.body.name;
+  const description = req.body.description;
+  const thumbnail = req.body.thumbnail;
+  const metadata = req.body.metadata;
+
+  const user = await getUser(userHash);
+  const result = await mintNFT(
+    user.address,
+    name,
+    description,
+    thumbnail,
+    metadata
   );
 
-  const authorization = flowService.authorize(); // 認証
-
-  const transaction = `
-  import Crypto
-            
-  transaction() {
-    prepare(signer: AuthAccount) {
-        let publicKey = PublicKey(
-            publicKey: "${publicKey}".decodeHex(),
-            signatureAlgorithm: SignatureAlgorithm.ECDSA_P256
-        )
-        let keyList = Crypto.KeyListEntry(keyIndex:1, publicKey:publicKey, hashAlgorithm:HashAlgorithm.SHA2_256, weight:1000.0, isRevoked:true)
-        let account = AuthAccount(payer: signer)
-        // add all the keys to the account
-        account.keys.add(publicKey: keyList.publicKey, hashAlgorithm: keyList.hashAlgorithm, weight: keyList.weight)
-        log(account)
-    }
-}
-  `;
-
-  const txResult = await flowService.sendTx({
-    transaction,
-    args: [],
-    authorizations: [authorization],
-    payer: authorization,
-    proposer: authorization,
-  });
-
-  console.log("transaction result: ", txResult);
-
-  let assignedAddress = "";
-  txResult.events.map((event) => {
-    console.log(event.data);
-    if (event.type == "flow.AccountCreated") {
-      assignedAddress = event.data.address;
-    }
-  });
-
-  // Save account info to mongodb
-  // TODO: Store the private key in a secure place like GCP Secret Manager
-  // For develop, store keys in mongodb
-  const userInstance = new User();
-  userInstance.userId = req.body.userId;
-  userInstance.address = assignedAddress;
-  userInstance.privateKey = privateKey;
-  userInstance.publicKey = publicKey;
-  userInstance.mnemonic = mnemonic;
-
-  userInstance.save((err) => {
-    if (!err) {
-      console.log("user create success: ", assignedAddress);
-    } else {
-      console.log("user create faild: ");
-      console.log(err);
-    }
-  });
-
-  res.sendFile(__dirname + "/src/test/createAccount.html");
+  res.json(result);
 });
 
 app.get("/", (req, res) => {
