@@ -12,12 +12,15 @@ import {
 import { CloseIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
 import { useShoppingCart } from "use-shopping-cart";
+import { useRecoilValue } from "recoil";
+import { userIdState } from "@/store/auth";
 
 export function CartDetail() {
   const { cartDetails, removeItem, formattedTotalPrice, clearCart, cartCount } =
     useShoppingCart();
 
   const router = useRouter();
+  const userId = useRecoilValue(userIdState);
 
   const handleOrder = async () => {
     try {
@@ -29,6 +32,7 @@ export function CartDetail() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            userId: userId,
             items: Object.entries(cartDetails).map(([_id, detail]) => ({
               id: detail.id,
               quantity: detail.quantity,

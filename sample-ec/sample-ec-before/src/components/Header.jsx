@@ -38,7 +38,7 @@ const Header = () => {
                 <MenuItem
                   onClick={() => {
                     setUserId(null);
-                    router.replace("/login");
+                    router.push("/login");
                   }}
                 >
                   Log out

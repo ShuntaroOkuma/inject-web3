@@ -5,28 +5,16 @@ export default async function handler(req, res) {
     return res.status(405).end();
   }
   try {
-    const { price, quantity, items } = req.body;
+    const { userId, items } = req.body;
     if (!items) return res.redirect(301, session.url);
 
-    const lineItems = items
-      ? items.map((item) => ({
-          price: item.id,
-          quantity: item.quantity,
-          adjustable_quantity: {
-            enabled: true,
-          },
-        }))
-      : [
-          {
-            price,
-            quantity,
-            adjustable_quantity: {
-              enabled: true,
-              minimum: 1,
-              maximum: 10,
-            },
-          },
-        ];
+    const lineItems = items.map((item) => ({
+      price: item.id,
+      quantity: item.quantity,
+      adjustable_quantity: {
+        enabled: true,
+      },
+    }));
 
     const stripe = new Stripe(process.env.STRIPE_API_KEY, {
       apiVersion: "2022-11-15",
@@ -39,6 +27,7 @@ export default async function handler(req, res) {
       line_items: lineItems,
       success_url: `${req.headers.origin}`,
       cancel_url: `${req.headers.origin}`,
+      metadata: { userId: userId },
     });
 
     res.status(200).json({
