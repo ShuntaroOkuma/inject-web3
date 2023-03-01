@@ -1,4 +1,4 @@
-This repo is a library for easy introduction of Web3 into existing Web2 services
+This repo is an API service for easy introduction of Web3 into existing Web2 services
 
 ## Background
 
@@ -8,7 +8,7 @@ This repo is a library for easy introduction of Web3 into existing Web2 services
 
 ## Purpose
 
-Enables quick and easy introduction of NFTs into existing services
+Enables quick and easy introduction of NFTs into existing services just to use API
 
 ## Overview
 
@@ -19,6 +19,8 @@ The following services can automatically generate Flow accounts for existing use
 - Ticket sales web site for sports, live concerts, museums, etc.
 
 For example, you can use it to mint an NFT according to the purchase of a product on an EC site, and use the NFT to participate in some event related the EC.
+
+You can check the diffrence the EC app code before and after injecting web3: https://github.com/ShuntaroOkuma/inject-web3/pull/3/files
 
 ## Benefits of existing Web2 services adopting his Web3
 
@@ -38,3 +40,17 @@ Imagine you are a user registered on an EC site
 - Click the link to see a screen where you can check the NFT
 - If you buy 10 of an item, a special NFT was minted
 - If you buy 10 programming-related books on Amazon, You can purchase the UDEMY course at a discount rate
+
+## How to use
+
+- Run API
+
+Check [API service README](inject-web3/README.md)
+
+- Run sample EC app before injecting web3
+
+Check [sample EC app README](sample-ec/sample-ec-before/README.md)
+
+- Run sample EC app after injecting web3
+
+Check [sample EC app README](sample-ec/sample-ec-after/README.md)
