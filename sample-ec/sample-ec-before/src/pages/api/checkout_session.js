@@ -4,6 +4,7 @@ export default async function handler(req, res) {
   if (req.method.toLocaleLowerCase() !== "post") {
     return res.status(405).end();
   }
+
   try {
     const { userId, items } = req.body;
     if (!items) return res.redirect(301, session.url);
