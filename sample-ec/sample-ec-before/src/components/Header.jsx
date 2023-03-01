@@ -1,3 +1,4 @@
+import { sha256 } from "@/lib/hash";
 import { userIdState } from "@/store/auth";
 import {
   Box,
@@ -17,6 +18,25 @@ const Header = () => {
   const router = useRouter();
   const [userId, setUserId] = useRecoilState(userIdState);
 
+  // Create Flow account
+  const enableWeb3 = async () => {
+    // Calc username's hash to avoid exposing username on the blockchain
+    const userHash = await sha256(userId);
+
+    // Call API to create account
+    const result = await fetch("http://localhost:5001/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userHash: userHash }),
+    }).then((response) => response.json());
+
+    alert(
+      `created web3: \n userHash: ${userHash} \n address: ${result.address}`
+    );
+  };
+
   return (
     <Box>
       <Container>
@@ -35,6 +55,14 @@ const Header = () => {
                 <Avatar name={userId} src="https://bit.ly/broken-link" />
               </MenuButton>
               <MenuList>
+                <MenuItem onClick={enableWeb3}>Enable Web3</MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    router.push("/nft");
+                  }}
+                >
+                  Check NFT
+                </MenuItem>
                 <MenuItem
                   onClick={() => {
                     setUserId(null);
