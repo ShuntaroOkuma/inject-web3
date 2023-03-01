@@ -9,7 +9,7 @@ Did you export ADMIN_ADDRESS and FLOW_PRIVATE_KEY?
 
 function getConfig() {
   const env = dotenv.config({
-    path: ".env.local",
+    path: ".env",
   }).parsed;
 
   const port = env.PORT || 5001;
