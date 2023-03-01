@@ -1,6 +1,5 @@
 import Stripe from "stripe";
 import { buffer } from "micro";
-import { sha256 } from "@/lib/hash";
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const stripe = new Stripe(process.env.STRIPE_API_KEY, {
@@ -37,32 +36,7 @@ export default async function handler(request, response) {
   // Run after payment completed
   if (data.payment_status === "paid") {
     const item = await stripe.checkout.sessions.listLineItems(data.id);
-    const userHash = await sha256(data.metadata.userId);
-
-    if (item) {
-      item.data.map((i) => {
-        // Call API to mint NFT
-        const result = fetch("http://localhost:5001/nfts", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userHash: userHash,
-            name: i.description,
-            description: i.description,
-            thumbnail: "test",
-            metadata: {
-              amount_subtotal: String(i.amount_subtotal),
-              currency: i.currency,
-              quantity: String(i.quantity),
-            },
-          }),
-        }).then((response) => response.json());
-
-        console.log(result);
-      });
-    }
+    console.log(item);
   }
 
   return response.status(200).end();
