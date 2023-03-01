@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const fcl = require("@onflow/fcl");
 const mongoose = require("mongoose");
 const User = require("./src/models/user");
@@ -10,7 +11,9 @@ const mintNFT = require("./src/api/mintNFT");
 const getNFT = require("./src/api/getNFT");
 
 const app = express();
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 const config = getConfig();
 
@@ -120,15 +123,19 @@ app.post("/nfts", async (req, res) => {
   const metadata = req.body.metadata;
 
   const user = await getUser(userHash);
-  const result = await mintNFT(
-    user.address,
-    name,
-    description,
-    thumbnail,
-    metadata
-  );
 
-  res.json(result);
+  if (user) {
+    const result = await mintNFT(
+      user.address,
+      name,
+      description,
+      thumbnail,
+      metadata
+    );
+    res.json(result);
+  } else {
+    res.status(500).send("user does not exist");
+  }
 });
 
 app.get("/", (req, res) => {

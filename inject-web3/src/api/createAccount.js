@@ -9,6 +9,11 @@ const config = getConfig();
 async function createAccount(userHash) {
   let err = "";
 
+  if (!userHash) {
+    err = `userHash is not set`;
+    return { address: undefined, err: err };
+  }
+
   // Check userHash existence in db
   const existingUser = await User.findOne(
     { userHash: userHash },
