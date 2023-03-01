@@ -1,6 +1,6 @@
-# Sample EC app BEFORE web3 injection
+# Sample EC app AFTER web3 injection
 
-This is the sample EC app **before** injecting web3.
+This is the sample EC app **after** injecting web3.
 
 This app uses Stripe API, so you need to prepare Stripe API Key and set env params to `.env` file.
 
