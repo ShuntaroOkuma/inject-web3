@@ -1,10 +1,23 @@
-# Sample EC app before web3 injection
+# Sample EC app AFTER web3 injection
+
+This is the sample EC app **after** injecting web3.
+
+This app uses Stripe API, so you need to prepare Stripe API Key and set env params to `.env` file.
+
+`.env` file sample:
+
+```
+STRIPE_API_KEY=rk_test_xxxxxxxxxx
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_API_KEY=pk_test_xxxxxxxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxx
+```
 
 ## Run app
 
 - Run nextjs app
 
 ```sh
+npm install
 npm run dev
 ```
 

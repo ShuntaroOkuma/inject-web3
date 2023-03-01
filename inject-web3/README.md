@@ -24,7 +24,7 @@ You neet change dir to `inject-web3/inject-web3`.
 - Set env
 
 ```sh
-cp src/flow/config.js.local config.js
+cp src/flow/config.js.local src/flow/config.js
 cp env.local .env
 ```
 
@@ -32,6 +32,19 @@ cp env.local .env
 
 ```sh
 flow emulator --contracts --simple-addresses -v
+```
+
+- Run shell to create accounts
+
+```sh
+cd ..
+bash setup_env.sh
+```
+
+- deploy contracts
+
+```sh
+flow deploy
 ```
 
 - Run mongodb
@@ -48,12 +61,13 @@ docker run -itd \
 - Run web app
 
 ```sh
+npm install
 nodemon
 ```
 
 ## testnet
 
-- Eet env
+- Set env
 
 Create `.env.testnet` file referring to `env.local` file
 
@@ -76,5 +90,6 @@ docker run -itd \
 - Run web app
 
 ```sh
+npm install
 nodemon
 ```
